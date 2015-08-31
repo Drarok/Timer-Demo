@@ -15,8 +15,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 	func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-		// Override point for customization after application launch.
+		// Register for local notifications of the types you need.
+		let types: UIUserNotificationType = .None | .Badge | .Alert | .Sound
+		let settings = UIUserNotificationSettings(forTypes: types, categories: nil)
+		UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+
+		// If there are launch options, check if we're launching due to a user tapping a notification.
+		if let options = launchOptions {
+			if let notification = options[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+				let app = UIApplication.sharedApplication()
+				self.application(app, didReceiveLocalNotification: notification)
+			}
+		}
+
+
 		return true
+	}
+
+	func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+		// After calling registerUserNotificationSettings, the app calls this method to report the results.
+		// You can use it to determine if your request was granted or denied by the user.
+	}
+
+	func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+		// This code block is invoked when application is still running and a notification fires
+		println("application:\(application) didReceiveLocalNotification:\(notification)")
+		if let nav = window?.rootViewController as? UINavigationController {
+			if let vc = nav.topViewController as? MasterViewController {
+				vc.handleNotification(notification)
+			}
+		}
 	}
 
 	func applicationWillResignActive(application: UIApplication) {

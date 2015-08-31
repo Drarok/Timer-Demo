@@ -32,19 +32,31 @@ class MasterViewController: UITableViewController {
 	}
 
 	func insertNewObject(sender: AnyObject) {
-		objects.insert(NSDate(), atIndex: 0)
+		let futureDate = NSDate(timeIntervalSinceNow: 5)
+		objects.insert(futureDate, atIndex: 0)
 		let indexPath = NSIndexPath(forRow: 0, inSection: 0)
 		self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+
+		let n = UILocalNotification();
+		n.fireDate = futureDate
+		n.alertTitle = "Timer"
+		n.alertBody = "Timer \(futureDate) is up!"
+		n.alertAction = "stop"
+
+		UIApplication.sharedApplication().scheduleLocalNotification(n)
+	}
+
+	// MARK: - Notifications
+	func handleNotification(notification: UILocalNotification) {
+		let alertView = UIAlertView(title: notification.alertTitle, message: notification.alertBody, delegate: self, cancelButtonTitle: "Cancel")
+		alertView.show()
 	}
 
 	// MARK: - Segues
 
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "showDetail" {
-		    if let indexPath = self.tableView.indexPathForSelectedRow() {
-		        let object = objects[indexPath.row] as! NSDate
-		    (segue.destinationViewController as! DetailViewController).detailItem = object
-		    }
+			// TODO: Segue to detail
 		}
 	}
 
